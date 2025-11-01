@@ -1,3 +1,4 @@
+from bson import int64
 from pydantic import BaseModel, EmailStr
 
 class UserCreate(BaseModel):
@@ -14,3 +15,16 @@ class UserOut(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+class SweetPostRequest(BaseModel):
+    id: str
+    name: str
+    category: str
+    price: int
+    quantity: int
+
+class SweetPostResponse(BaseModel):
+    name: str
+    category: str
+    price: int
+    quantity: int
