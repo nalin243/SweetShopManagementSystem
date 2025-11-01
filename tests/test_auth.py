@@ -1,16 +1,24 @@
 import pytest
 import httpx
+import uuid
 
 BASE_URL = "http://127.0.0.1:8001"
 
-TEST_USER = {"email": "test@gmail.com", "password": "test"}
+def make_test_user():
+    return {
+        "email": f"test_{uuid.uuid4().hex[:6]}@gmail.com",
+        "password": "test"
+    }
 
 
 @pytest.mark.asyncio
 async def test_signup_success():
     #first signup should be successful
+
+    user = make_test_user()
+
     async with httpx.AsyncClient() as client:
-        response = await client.post(f"{BASE_URL}/auth/signup", json=TEST_USER)
+        response = await client.post(f"{BASE_URL}/auth/signup", json=user)
 
         assert response.status_code in (200, 201)
 
@@ -23,11 +31,14 @@ async def test_signup_success():
 @pytest.mark.asyncio
 async def test_signup_duplicate():
     #duplicate signup after the first should fail
+
+    user = make_test_user()
+
     async with httpx.AsyncClient() as client:
  
-        await client.post(f"{BASE_URL}/auth/signup", json=TEST_USER)
+        await client.post(f"{BASE_URL}/auth/signup", json=user)
 
-        response = await client.post(f"{BASE_URL}/auth/signup", json=TEST_USER)
+        response = await client.post(f"{BASE_URL}/auth/signup", json=user)
 
         assert response.status_code == 400
         assert response.json()["detail"] == "Email already registered"
@@ -36,11 +47,14 @@ async def test_signup_duplicate():
 @pytest.mark.asyncio
 async def test_login_success():
     #signup then login should give access token
+
+    user = make_test_user()
+
     async with httpx.AsyncClient() as client:
 
-        await client.post(f"{BASE_URL}/auth/signup", json=TEST_USER)
+        await client.post(f"{BASE_URL}/auth/signup", json=user)
 
-        form_data = {"username": TEST_USER["email"], "password": TEST_USER["password"]}
+        form_data = {"username": user["email"], "password": user["password"]}
         response = await client.post(f"{BASE_URL}/auth/login", data=form_data)
 
         assert response.status_code == 200
@@ -52,6 +66,9 @@ async def test_login_success():
 @pytest.mark.asyncio
 async def test_login_invalid():
     #invalid login should respond as such
+
+    user = make_test_user()
+
     async with httpx.AsyncClient() as client:
         form_data = {"username": "wrong@example.com", "password": "wrongpass"}
         response = await client.post(f"{BASE_URL}/auth/login", data=form_data)
