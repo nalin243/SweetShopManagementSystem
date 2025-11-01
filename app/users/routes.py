@@ -1,10 +1,12 @@
 from app.schemas import UserOut
 from app.auth import services as auth_services
+from app.users import services as user_services
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Path
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-@router.get("/me", response_model=UserOut)
-async def read_me(current_user = Depends(auth_services.get_current_user)):
-    pass
+#only for development and testing
+@router.post("/promote/{email}")
+async def promote_user(email: str = Path(...,description="email of user to be promoted")):
+    return await user_services.promote_user(email=email)

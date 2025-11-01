@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    role:str = "user"
 
 class UserOut(BaseModel):
     id: str
@@ -17,7 +18,6 @@ class Token(BaseModel):
     token_type: str = "bearer"
 
 class SweetPostRequest(BaseModel):
-    id: str
     name: str
     category: str
     price: int

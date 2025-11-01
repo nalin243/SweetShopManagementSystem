@@ -20,6 +20,18 @@ class UserModel(BaseModel):
     id: Optional[PyObjectId] = None
     email: EmailStr
     password: str
+    role:str = "user"
+
+    class Config:
+        json_encoders = {ObjectId: str}
+        arbitrary_types_allowed = True
+
+class SweetModel(BaseModel):
+    id: Optional[PyObjectId] = None
+    name: str
+    category: str
+    price: int
+    quantity: int
 
     class Config:
         json_encoders = {ObjectId: str}
