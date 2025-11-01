@@ -39,7 +39,7 @@ def start_test_server():
 
     yield
 
-    #dropping the test collection so as not cause conflicts in future tests
+    #emptying the test collection so as not cause conflicts in future tests
     client = MongoClient(env["MONGO_URI"])
     db = client["test_auth"]
     db["users"].delete_many({})
