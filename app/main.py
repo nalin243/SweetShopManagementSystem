@@ -2,6 +2,7 @@ from app import database
 from app.core.config import settings
 from app.auth import routes as auth_routes
 from app.users import routes as user_routes
+from app.api import routes as api_routes
 
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -19,6 +20,7 @@ app = FastAPI(title="Sweet Shop Management System",lifspan=lifespan)
 
 app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
+app.include_router(api_routes.router)
 
 @app.get("/health")
 def health():

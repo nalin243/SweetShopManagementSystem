@@ -43,6 +43,7 @@ def start_test_server():
     client = MongoClient(env["MONGO_URI"])
     db = client["test_auth"]
     db["users"].delete_many({})
+    db["sweets"].delete_many({})
     client.close()
 
     #stop server
