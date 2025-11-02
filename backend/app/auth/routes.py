@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/signup", response_model=Token)
 async def signup(user_create: UserCreate):
@@ -23,7 +23,7 @@ async def signup(user_create: UserCreate):
             )
     else:
         new_user = await user_services.create_user(user_create.email,user_create.password)
-        access_token = security.create_access_token({"sub":user_create.email})
+        access_token = security.create_access_token({"sub":user_create.email,"role":user_create.role})
         return {"access_token":access_token,"token_type":"bearer"}
 
 @router.post("/login", response_model=Token)
@@ -32,7 +32,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     if(existing_user):
         user = await auth_services.authenticate_user(form_data.username,form_data.password)
-        access_token = security.create_access_token({"sub":user.email})
+        access_token = security.create_access_token({"sub":user.email,"role":user.role})
         return {"access_token":access_token,"token_type":"bearer"}
     else:
         raise HTTPException(

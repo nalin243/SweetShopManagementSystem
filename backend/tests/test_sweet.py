@@ -25,9 +25,9 @@ def make_test_user():
 async def get_token(email, password):
     #helper function for login and getting token
     async with httpx.AsyncClient() as client:
-        await client.post(f"{BASE_URL}/auth/signup", json={"email": email, "password": password})
+        await client.post(f"{BASE_URL}/api/auth/signup", json={"email": email, "password": password})
         form = {"username": email, "password": password}
-        res = await client.post(f"{BASE_URL}/auth/login", data=form)
+        res = await client.post(f"{BASE_URL}/api/auth/login", data=form)
         return res.json()["access_token"]
 
 
@@ -130,13 +130,13 @@ async def test_delete_sweet_admin_only():
     headers = None
 
     async with httpx.AsyncClient() as client:
-        await client.post(f"{BASE_URL}/auth/signup", json={"email": ADMIN_USER["email"], "password":  ADMIN_USER["password"]})
+        await client.post(f"{BASE_URL}/api/auth/signup", json={"email": ADMIN_USER["email"], "password":  ADMIN_USER["password"]})
         await client.post(f"{BASE_URL}/users/promote/{ADMIN_USER["email"]}")
 
         await asyncio.sleep(0.2)#to allow write to be updated
 
         form = {"username": ADMIN_USER["email"], "password": ADMIN_USER["password"]}
-        res = await client.post(f"{BASE_URL}/auth/login", data=form)
+        res = await client.post(f"{BASE_URL}/api/auth/login", data=form)
         admin_token = res.json()["access_token"]
         headers = {"Authorization": f"Bearer {admin_token}"}
 
@@ -178,13 +178,13 @@ async def test_purchase_sweet():
 async def test_restock_sweet_admin_only():
     async with httpx.AsyncClient() as client:
         #after restocking amount should be old qty + restock_amount
-        await client.post(f"{BASE_URL}/auth/signup", json={"email": ADMIN_USER["email"], "password":  ADMIN_USER["password"]})
+        await client.post(f"{BASE_URL}/auth/api/signup", json={"email": ADMIN_USER["email"], "password":  ADMIN_USER["password"]})
         await client.post(f"{BASE_URL}/users/promote/{ADMIN_USER["email"]}")
 
         await asyncio.sleep(0.2)#to allow write to be updated
 
         form = {"username": ADMIN_USER["email"], "password": ADMIN_USER["password"]}
-        res = await client.post(f"{BASE_URL}/auth/login", data=form)
+        res = await client.post(f"{BASE_URL}/api/auth/login", data=form)
         admin_token = res.json()["access_token"]
         headers = {"Authorization": f"Bearer {admin_token}"}
 
