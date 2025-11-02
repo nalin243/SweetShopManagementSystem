@@ -10,6 +10,8 @@ from bson import ObjectId
 async def get_sweet_by_id(id: str):
     return await sweets_collection.find_one({"_id": ObjectId(id)})
 
+
+
 async def get_sweet_by_name(name:str) -> Optional[SweetModel]:
 	sweet = await sweets_collection.find_one({"name":name})
 	if sweet:
@@ -18,7 +20,9 @@ async def get_sweet_by_name(name:str) -> Optional[SweetModel]:
 	else:
 		return None
 
-async def create_sweet(name:str,category:str,price:int,quantity:int):
+
+
+async def create_sweet(name:str, category:str, price:int, quantity:int):
 	sweet_doc = {
 		"name":name,
 		"category":category,
@@ -31,6 +35,8 @@ async def create_sweet(name:str,category:str,price:int,quantity:int):
 	new_doc["id"] = new_doc.get("_id")
 	return SweetModel(**new_doc)
 
+
+
 async def get_sweets():
 	sweets = sweets_collection.find({})
 	sweets = await sweets.to_list()
@@ -41,31 +47,43 @@ async def get_sweets():
 	return sweets
 
 
-async def search_sweets(name:Optional[str],category:Optional[str],min_price:Optional[int],max_price:Optional[int]):
 
-    if name is not None:
-        results = await sweets_collection.find({"name":name}).to_list()
+async def search_sweets(name:Optional[str], category:Optional[str], min_price:Optional[int], max_price:Optional[int]):
+	query = {}
 
-    if category is not None:
-        results = await sweets_collection.find({"category":category}).to_list()
+	if name:
+		query["name"] = name
+	if category:
+		query["category"] = category
 
-    if min_price!=None or max_price!=None:
-    	if min_price==None:
-    		results = await sweets_collection.find({"price":{"$lte":max_price}})
-    	if max_price==None:
-    		results = await sweets_collection.find({"price":{"$gte":min_price}})
-    	if min_price!=None and max_price!=None:
-    		results = await sweets_collection.find({"price":{"$gte":min_price,"$lte":max_price}})
+	if min_price is not None or max_price is not None:
+		price_filter = {}
+		if min_price is not None:
+			price_filter["$gte"] = min_price
+		if max_price is not None:
+			price_filter["$lte"] = max_price
+		query["price"] = price_filter
 
-    return results
+	return await sweets_collection.find(query).to_list()
+
+
 
 async def update_sweet(id:str,update_data:dict):
-    result = await sweets_collection.find_one_and_update({"_id":ObjectId(id)},{"$set":update_data},return_document=True)
+    result = await sweets_collection.find_one_and_update(
+    	{"_id":ObjectId(id)},
+    	{"$set":update_data}, 
+    	return_document=True
+    	)
+
     return result
+
+
 
 async def delete_sweet(id:str):
     result = await sweets_collection.delete_one({"_id": ObjectId(id)})
     return result.deleted_count > 0
+
+
 
 async def decrease_sweet_quantity(sweet_id: str):
     result = await sweets_collection.find_one_and_update(
@@ -75,8 +93,9 @@ async def decrease_sweet_quantity(sweet_id: str):
     )
     return result
 
+
+
 async def increase_sweet_quantity(sweet_id: str, amount: int):
-    from bson import ObjectId
     result = await sweets_collection.find_one_and_update(
         {"_id": ObjectId(sweet_id)},
         {"$inc": {"quantity": amount}},
