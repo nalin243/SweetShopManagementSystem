@@ -17,13 +17,13 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
-class SweetPostRequest(BaseModel):
+class SweetRequest(BaseModel):
     name: str
     category: str
     price: int
     quantity: int
 
-class SweetPostResponse(BaseModel):
+class SweetResponse(BaseModel):
     name: str
     category: str
     price: int

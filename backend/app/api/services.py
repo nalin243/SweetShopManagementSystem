@@ -1,6 +1,6 @@
 from app.database import sweets_collection
 from app.models import SweetModel
-from app.schemas import SweetPostRequest,SweetPostResponse
+from app.schemas import SweetRequest,SweetResponse
 from app.auth import services as auth_services
 
 from typing import Optional,List

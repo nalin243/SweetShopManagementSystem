@@ -13,29 +13,31 @@ from datetime import timedelta
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/signup", response_model=Token)
-async def signup(user_create: UserCreate):
+async def signup(
+    user_create: UserCreate
+    ):
+
     existing_user = await user_services.get_user_by_email(user_create.email)
 
     if existing_user:
-        raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-            )
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Email already registered")
     else:
-        new_user = await user_services.create_user(user_create.email,user_create.password)
-        access_token = security.create_access_token({"sub":user_create.email,"role":user_create.role})
+        new_user = await user_services.create_user(user_create.email, user_create.password)
+        access_token = security.create_access_token({"sub":user_create.email, "role":user_create.role})
         return {"access_token":access_token,"token_type":"bearer"}
 
+
+
 @router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends()
+    ):
+
     existing_user = await user_services.get_user_by_email(form_data.username)
 
     if(existing_user):
-        user = await auth_services.authenticate_user(form_data.username,form_data.password)
-        access_token = security.create_access_token({"sub":user.email,"role":user.role})
+        user = await auth_services.authenticate_user(form_data.username, form_data.password)
+        access_token = security.create_access_token({"sub":user.email, "role":user.role})
         return {"access_token":access_token,"token_type":"bearer"}
     else:
-        raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
-            )
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
