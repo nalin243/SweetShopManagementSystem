@@ -16,9 +16,14 @@ async def authenticate_user(email: str, password: str) -> Optional[UserModel]:
         return None
     if not utils.verify_password(password, user.password):
         return None
+        
     return user
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> Optional[UserModel]:
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme)
+    ) -> Optional[UserModel]:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -38,10 +43,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Optional[User
 
     return user
 
-async def require_admin(current_user = Depends(get_current_user)):
+
+
+async def require_admin(
+    current_user = Depends(get_current_user)
+    ):
     if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin privileges required"
         )
+
     return current_user

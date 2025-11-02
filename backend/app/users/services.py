@@ -11,7 +11,10 @@ async def get_user_by_email(email: str) -> Optional[UserModel]:
     if doc:
         doc["id"] = doc.get("_id")
         return UserModel(**doc)
+        
     return None
+
+
 
 async def get_user_by_id(user_id: str) -> Optional[UserModel]:
     if not ObjectId.is_valid(user_id):
@@ -20,7 +23,10 @@ async def get_user_by_id(user_id: str) -> Optional[UserModel]:
     if doc:
         doc["id"] = doc.get("_id")
         return UserModel(**doc)
+
     return None
+
+
 
 async def create_user(email: str, password: str, role:str="user") -> UserModel:
     hashed_pw = utils.hash_password(password)
@@ -30,13 +36,13 @@ async def create_user(email: str, password: str, role:str="user") -> UserModel:
     new_doc["id"] = new_doc.get("_id")
     return UserModel(**new_doc)
 
+
+
 async def promote_user(email: str):
     user = await users_collection.find_one({"email": email})
     if not user:
-        raise HTTPException(
-            status_code=404, 
-            detail="User not found"
-            )
+        raise HTTPException(status_code=404, detail="User not found")
     await users_collection.update_one({"email": email}, {"$set": {"role": "admin"}})
+
     return {"message": "User promoted"}
 
